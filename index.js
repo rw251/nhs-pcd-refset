@@ -263,18 +263,45 @@ async function loadDataIntoMemory({ dirName }) {
       if (id === 'id' || !referencedComponentId) return;
       if (!refSets[refsetId]) {
         allConcepts[refsetId] = true;
-        refSets[refsetId] = { activeConcepts: [], inactiveConcepts: [] };
+        refSets[refsetId] = {};
+      }
+      if (!refSets[refsetId][id]) {
+        refSets[refsetId][id] = {
+          effectiveTime,
+          conceptId: referencedComponentId,
+        };
+        if (active) {
+          refSets[refsetId][id].active = true;
+        }
+      } else {
+        if (refSets[refsetId][id].conceptId !== referencedComponentId) {
+          console.log(
+            `An unexpected error. I thought that if the id (${id}) was the same, then the conceptid (${referencedComponentId}) would be the same.`
+          );
+          console.log('Need to rewrite the code...');
+          process.exit();
+        }
+        if (effectiveTime > refSets[refsetId][id].effectiveTime) {
+          refSets[refsetId][id].effectiveTime = effectiveTime;
+          refSets[refsetId][id].active = active;
+        }
       }
       allConcepts[referencedComponentId] = true;
-      if (active === '1') {
-        refSets[refsetId].activeConcepts.push(referencedComponentId);
-      } else {
-        refSets[refsetId].inactiveConcepts.push(referencedComponentId);
-      }
     });
   console.log(
     `> Ref set file loaded. It has ${Object.keys(refSets).length} rows.`
   );
+
+  // Now process it a bit
+  Object.keys(refSets).forEach((refSetId) => {
+    refSets[refSetId] = Array.from(
+      new Set(
+        Object.values(refSets[refSetId])
+          .filter((x) => x.active)
+          .map((x) => x.conceptId)
+      )
+    );
+  });
 
   const snomedDefsSize = Object.keys(SNOMED_DEFINITIONS).length;
   const TERM_DIR = path.join(PCD_DIR, 'Full', 'Terminology');
@@ -417,7 +444,6 @@ async function loadDataIntoMemory({ dirName }) {
     : {};
 
   const unknownCodes = Object.values(simpleRefSets)
-    .map((x) => x.activeConcepts.concat(x.inactiveConcepts))
     .flat()
     .filter((conceptId) => !simpleDefs[conceptId])
     .map((conceptId) => {

@@ -1,0 +1,259 @@
+html, body {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  font-family: arial, sans-serif;
+  font-size: 16px;
+}
+
+.wrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  column-gap: 0;
+  height: calc(100% - 102px);
+}
+
+select {
+  padding: 4px;
+  border: 1px solid #555555;
+  width: 220px;
+  margin-left: 20px;
+  background-color: #DBA515;
+  text-align: center;
+}
+
+option {
+  text-align: center;
+  padding: 4px;
+}
+
+option:disabled {
+  display: none;
+}
+
+li {
+  position: relative;
+  display: block;
+  padding: .5rem 1rem;
+  color: #212529;
+  text-decoration: none;
+  background-color: #fff;
+  border: 1px solid rgba(0,0,0,.125);
+}
+
+li:hover {
+  cursor: pointer;
+  background-color: #eeeeee;
+}
+
+li.selected {
+  background-color: yellow;
+  /* font-weight: bold; */
+}
+
+ul {
+  display: flex;
+  flex-direction: column;
+  padding-left: 0;
+  margin: 0;
+}
+
+li * {
+  pointer-events: none;
+}
+
+input {
+  padding: 8px;
+  display: block;
+  border: 1px solid #cccccc;
+  width: 80%;
+  overflow: visible;
+  margin: 10px auto;
+}
+
+/* LOADING indicator */
+.lds-facebook {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+.lds-facebook div {
+  display: inline-block;
+  position: absolute;
+  left: 8px;
+  width: 16px;
+  background: #cfcfcf;
+  animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+}
+.lds-facebook div:nth-child(1) {
+  left: 8px;
+  animation-delay: -0.24s;
+}
+.lds-facebook div:nth-child(2) {
+  left: 32px;
+  animation-delay: -0.12s;
+}
+.lds-facebook div:nth-child(3) {
+  left: 56px;
+  animation-delay: 0;
+}
+@keyframes lds-facebook {
+  0% {
+    top: 8px;
+    height: 64px;
+  }
+  50%, 100% {
+    top: 24px;
+    height: 32px;
+  }
+}
+
+/*TABLE*/
+table{
+  border-collapse: collapse;
+  width: 100%;
+  overflow: hidden;
+  margin-bottom: 10px;
+  table-layout: fixed;
+}
+thead > tr {
+  background: #eeeeee;
+  font-weight: bold;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+  position: relative;
+}
+
+.scrollable {
+  overflow-y: auto;
+  /* Firefox understands this*/
+  /* scrollbar-color: #666666 #dddddd;
+  scrollbar-width: thin; */
+}
+
+/* other browsers understand this */
+/* ::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track-piece {
+  background-color: #dddddd;
+}
+
+::-webkit-scrollbar-thumb:vertical {
+  height: 20px;
+  background-color: #666666;
+} */
+
+h3 {
+  margin-top: 0;
+}
+
+.header {
+  margin-top: 10px;
+}
+
+button:hover {
+  background-color: #3aaf10;
+}
+button {
+  background-color: #4caf50;
+  border: none;
+  color: white;
+  padding: 16px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+button:disabled, button[disabled] {
+  background-color: #cccccc;
+  color: #666666;
+}
+
+.list {
+  border: 1px solid rgba(0,0,0,.125);
+}
+
+.banner {
+  padding: 5px;
+  text-align: center;
+  background: #14ba99;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  height: 26px;
+
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+/* .snomed-version {
+  padding: 6px;
+  background-color: #DBA515;
+  border-radius: 3px;
+} */
+
+/*TABS*/
+
+.tab-content {
+  transform: translateX(-4000px);
+  position: absolute;
+}
+
+.tab-content.focus {
+  transform: translateX(0px);
+}
+
+@media (min-width: 640px) {
+  .tab {
+    display: none;
+  }
+  .wrapper {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 10px;
+  }
+  .tab-content {
+    transform: translateX(0px);
+    position: inherit;
+  }
+}
+
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+  background-color: inherit;
+  color: black;
+  margin: 0;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
