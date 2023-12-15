@@ -16,22 +16,36 @@ function getDefs(refSetId) {
   }
   console.log('Definitions now loaded.');
   const refSet = refSets[refSetId];
-  console.log(refSet.length);
-  const numberOfConcepts = refSet.length;
+  console.log(refSet.active.length);
+  console.log(refSet.inactive.length);
+  const numberOfActiveConcepts = refSet.active.length;
+  const numberOfInactiveConcepts = refSet.inactive.length;
+  const numberOfConcepts = refSet.active.length + refSet.inactive.length;
   console.log(numberOfConcepts);
-  const concepts = refSet.slice(0, 10000);
-  const numberOfConceptsReturned = concepts.length;
-  const refSetHTML = concepts
-    .map(
-      (x) =>
-        `<tr><td>${x}</td><td>${
-          definitions[x] ? definitions[x].t : ''
-        }</td></tr>`
-    )
-    .join('');
+  const concepts = refSet.active.slice(0, 10000 - refSet.inactive.length);
+  const numberOfConceptsReturned = concepts.length + refSet.inactive.length;
+  const refSetHTML =
+    concepts
+      .map(
+        (x) =>
+          `<tr><td>${x}</td><td>${
+            definitions[x] ? definitions[x].t : ''
+          }</td></tr>`
+      )
+      .join('') +
+    refSet.inactive
+      .map(
+        (x) =>
+          `<tr class="inactive"><td>${x}</td><td>${
+            definitions[x] ? definitions[x].t : ''
+          }</td></tr>`
+      )
+      .join('');
   postMessage({
     msg: 'refset',
     content: {
+      numberOfActiveConcepts,
+      numberOfInactiveConcepts,
       numberOfConcepts,
       numberOfConceptsReturned,
       refSetHTML,
@@ -39,10 +53,13 @@ function getDefs(refSetId) {
     },
   });
 
-  const data = refSet
+  const dataActive = refSet.active
     .map((x) => `${x}\t${definitions[x] ? definitions[x].t : ''}`)
     .join('\n');
-  postMessage({ msg: 'data', content: { data, refSetId } });
+  const dataInactive = refSet.inactive
+    .map((x) => `${x}\t${definitions[x] ? definitions[x].t : ''}`)
+    .join('\n');
+  postMessage({ msg: 'data', content: { dataActive, dataInactive, refSetId } });
 }
 
 onmessage = (e) => {
@@ -65,7 +82,7 @@ onmessage = (e) => {
 async function loadDefinitions(folder) {
   console.log('loading defs...');
   definitions = await fetch(
-    `{URL}/files/processed/${folder}/pcd-defs.json`
+    `{URL}/files/processed/${folder}/pcd-defs.json?v=1`
   ).then((x) => x.json());
   console.log(new Date().toISOString(), 'Defs loaded');
   postMessage({ msg: 'defsLoaded' });
@@ -74,11 +91,28 @@ async function loadDefinitions(folder) {
 async function loadRefSets(folder) {
   console.log('loading refs...');
   refSets = await fetch(
-    `{URL}/files/processed/${folder}/pcd-refSets.json`
+    `{URL}/files/processed/${folder}/pcd-refSets.json?v=1`
   ).then((x) => x.json());
   refSetNames = Object.keys(refSets);
   const refSetHTML = refSetNames
-    .map((x) => `<li data-id="${x}">${x} (${refSets[x].length} codes)</li>`)
+    .map((x) => {
+      let [part1, part2, thing] = x.split(' - ');
+      thing = thing.replace(
+        ' simple reference set (foundation metadata concept)',
+        ''
+      );
+      thing = thing.replace('Quality and Outcomes Framework', 'QOF');
+      thing = thing[0].toUpperCase() + thing.slice(1);
+      return `<li data-id="${x}" data-part1="${part1}" data-part2="${part2}">${thing}<br><span>(${
+        refSets[x].active.length
+      } active code${refSets[x].active.length !== 1 ? 's' : ''}${
+        refSets[x].inactive.length > 0
+          ? `, ${refSets[x].inactive.length} inactive code${
+              refSets[x].inactive.length !== 1 ? 's' : ''
+            }`
+          : ''
+      })</span></li>`;
+    })
     .join('');
   console.log(new Date().toISOString(), 'Refs loaded');
   postMessage({ msg: 'refsLoaded', content: { refSetHTML } });
