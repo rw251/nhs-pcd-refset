@@ -270,7 +270,7 @@ async function loadDataIntoMemory({ dirName }) {
           effectiveTime,
           conceptId: referencedComponentId,
         };
-        if (active) {
+        if (active === '1') {
           refSets[refsetId][id].active = true;
         }
       } else {
@@ -283,7 +283,7 @@ async function loadDataIntoMemory({ dirName }) {
         }
         if (effectiveTime > refSets[refsetId][id].effectiveTime) {
           refSets[refsetId][id].effectiveTime = effectiveTime;
-          refSets[refsetId][id].active = active;
+          refSets[refsetId][id].active = active === '1';
         }
       }
       allConcepts[referencedComponentId] = true;
@@ -294,13 +294,24 @@ async function loadDataIntoMemory({ dirName }) {
 
   // Now process it a bit
   Object.keys(refSets).forEach((refSetId) => {
-    refSets[refSetId] = Array.from(
+    const active = Array.from(
       new Set(
         Object.values(refSets[refSetId])
           .filter((x) => x.active)
           .map((x) => x.conceptId)
       )
     );
+    const inactive = Array.from(
+      new Set(
+        Object.values(refSets[refSetId])
+          .filter((x) => !x.active)
+          .map((x) => x.conceptId)
+      )
+    );
+    refSets[refSetId] = {
+      active,
+      inactive,
+    };
   });
 
   const snomedDefsSize = Object.keys(SNOMED_DEFINITIONS).length;
@@ -444,6 +455,7 @@ async function loadDataIntoMemory({ dirName }) {
     : {};
 
   const unknownCodes = Object.values(simpleRefSets)
+    .map((x) => x.active.concat(x.inactive))
     .flat()
     .filter((conceptId) => !simpleDefs[conceptId])
     .map((conceptId) => {
