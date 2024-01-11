@@ -90,7 +90,8 @@ async function setupRoutes() {
       return 0;
     })
     .map((x) => {
-      const [region, description, version, date] = x.split('_');
+      let [region, description, version, date, date2] = x.split('_');
+      if (date === 'BETA') date = date2;
       let readableVersion = x;
       if (
         region === 'uk' &&
