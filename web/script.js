@@ -94,10 +94,10 @@ async function setupRoutes() {
       if (date === 'BETA') date = date2;
       let readableVersion = x;
       if (
-        region === 'uk' &&
+        region.indexOf('uk') === 0 &&
         description.indexOf('sct') === 0 &&
         version.match(/^[0-9]+\.[0-9]+\.[0-9]+$/) &&
-        date.match(/^[0-9]{14}Z$/)
+        date.match(/^[0-9]{8}(?:[0-9]{6}z)?$/)
       ) {
         readableVersion = `v${version} (${date.substring(
           0,
