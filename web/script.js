@@ -97,7 +97,7 @@ async function setupRoutes() {
         region.indexOf('uk') === 0 &&
         description.indexOf('sct') === 0 &&
         version.match(/^[0-9]+\.[0-9]+\.[0-9]+$/) &&
-        date.match(/^[0-9]{8}(?:[0-9]{6}z)?$/)
+        date.match(/^[0-9]{8}(?:[0-9]{6}Z)?$/)
       ) {
         readableVersion = `v${version} (${date.substring(
           0,
