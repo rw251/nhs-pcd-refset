@@ -110,7 +110,7 @@ async function setupRoutes() {
     })
     .map(
       ({ readableVersion, id }) =>
-        `<option value="${x}">${readableVersion}</option>`
+        `<option value="${id}">${readableVersion}</option>`
     )}`;
 }
 
