@@ -84,28 +84,34 @@ let list;
 async function setupRoutes() {
   const routes = await fetch('/web/routes.json').then((x) => x.json());
   $versionPicker.innerHTML = `<option disabled selected>Please select SNOMED version</option>${routes
-    .sort((b, a) => {
-      if (a < b) return -1;
-      if (a > b) return 1;
-      return 0;
-    })
     .map((x) => {
       let [region, description, version, date, date2] = x.split('_');
       if (date === 'BETA') date = date2;
       let readableVersion = x;
+      let date8char;
       if (
         region.indexOf('uk') === 0 &&
         description.indexOf('sct') === 0 &&
         version.match(/^[0-9]+\.[0-9]+\.[0-9]+$/) &&
         date.match(/^[0-9]{8}(?:[0-9]{6}Z)?$/)
       ) {
+        date8char = date.substring(0, 8);
         readableVersion = `v${version} (${date.substring(
           0,
           4
         )}/${date.substring(4, 6)}/${date.substring(6, 8)})`;
       }
-      return `<option value="${x}">${readableVersion}</option>`;
-    })}`;
+      return { date: date8char, readableVersion, id: x };
+    })
+    .sort((b, a) => {
+      if (a.date < b.date) return -1;
+      if (a.date > b.date) return 1;
+      return 0;
+    })
+    .map(
+      ({ readableVersion, id }) =>
+        `<option value="${x}">${readableVersion}</option>`
+    )}`;
 }
 
 $versionPicker.addEventListener('change', async (event) => {
