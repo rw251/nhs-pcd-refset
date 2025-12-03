@@ -98,7 +98,7 @@ async function downloadIfNotExists(url) {
 
   if (existingFiles.indexOf(zipFileName) > -1) {
     console.log(`> The zip file already exists so no need to download again.`);
-    return zipFileName;
+    return { zipFileName };
   }
 
   console.log(`> That zip is not stored locally. Downloading...`);
